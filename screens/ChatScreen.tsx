@@ -1,31 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, Button, FlatList, Text, StyleSheet } from 'react-native';
-import { useRoute, RouteProp } from '@react-navigation/native'; // Import for route
-import { getFirestore, collection, query, where, onSnapshot, addDoc, orderBy } from 'firebase/firestore';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { AppStackParamList } from '../navigation/AppStack'; // 👈 adjust if needed
+import { getFirestore, collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
 import { auth } from '../firebaseConfig';
 
-// Typing for the props of the ChatScreen component
-type ChatScreenProps = {
-  route: {
-    params: {
-      matchId: string;
-    };
-  };
-};
+type Props = NativeStackScreenProps<AppStackParamList, 'ChatScreen'>;
 
-const db = getFirestore();
+const ChatScreen: React.FC<Props> = ({ route }) => {
+  const { matchId } = route.params;
 
-const ChatScreen: React.FC<ChatScreenProps> = () => {
-  type RouteParams = {
-    params: {
-      matchId: string;
-    };
-  };
-
-  const route = useRoute<RouteProp<RouteParams, 'params'>>(); // Define route type
-  const { matchId } = route.params; // Get matchId from route params
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
+  const db = getFirestore();
 
   useEffect(() => {
     const messagesRef = collection(db, 'matches', matchId, 'messages');
@@ -45,8 +32,7 @@ const ChatScreen: React.FC<ChatScreenProps> = () => {
   const handleSendMessage = async () => {
     if (newMessage) {
       const userId = auth.currentUser?.uid;
-      const messageRef = collection(db, 'matches', matchId, 'messages');
-      await addDoc(messageRef, {
+      await addDoc(collection(db, 'matches', matchId, 'messages'), {
         text: newMessage,
         senderId: userId,
         timestamp: new Date().getTime(),
@@ -62,7 +48,9 @@ const ChatScreen: React.FC<ChatScreenProps> = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.message}>
-            <Text>{item.senderId === auth.currentUser?.uid ? 'You' : 'Other User'}: {item.text}</Text>
+            <Text>
+              {item.senderId === auth.currentUser?.uid ? 'You' : 'Other'}: {item.text}
+            </Text>
           </View>
         )}
       />
