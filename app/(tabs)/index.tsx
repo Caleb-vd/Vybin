@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
-import LoginScreen from '../../LoginScreen';
+import LoginScreen from '../../screens/PhoneLoginScreen';
 import ProfileScreen from '../../ProfileScreen';
 
 export default function Home() {

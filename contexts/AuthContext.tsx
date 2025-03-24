@@ -1,49 +1,35 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, signInAnonymously, User } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
+import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase';
 
 type AuthContextType = {
   user: User | null;
-  loading: boolean; // ✅ Add this line to track loading state
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  loading: boolean;
 };
 
-const AuthContext = createContext<AuthContextType>({
+export const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true, // Default to true while waiting for auth state
+  setUser: () => {},
+  loading: true,
 });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // Track if auth is in progress
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log('✅ Authenticated:', user.uid);
-        setUser(user);
-        setLoading(false); // Auth completed
-      } else {
-        signInAnonymously(auth)
-          .then((res) => {
-            console.log('✅ Logged in anonymously');
-            setUser(res.user);
-            setLoading(false); // Auth completed
-          })
-          .catch((err) => {
-            console.error('❌ Auth error:', err);
-            setLoading(false); // Auth completed
-          });
-      }
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, setUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);
