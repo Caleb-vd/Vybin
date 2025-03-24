@@ -1,20 +1,33 @@
-// screens/ProfileSetupScreen.tsx
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native';
 import { auth } from '../firebaseConfig';
+import { getFirestore, setDoc, doc } from 'firebase/firestore';
+
+const db = getFirestore();
 
 const ProfileSetupScreen: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [age, setAge] = useState<string>('');
   const [club, setClub] = useState<string>('');
 
-  const handleSaveProfile = () => {
-    // Logic to save profile (e.g., save to Firestore)
+  const handleSaveProfile = async () => {
     if (name && age && club) {
-      // Firestore logic will go here
-      console.log('Profile saved:', { name, age, club });
+      try {
+        const userId = auth.currentUser?.uid;
+        if (userId) {
+          await setDoc(doc(db, 'users', userId), {
+            name,
+            age,
+            club,
+          });
+          Alert.alert('Profile Saved!');
+        }
+      } catch (error) {
+        console.error(error);
+        Alert.alert('Error saving profile');
+      }
     } else {
-      alert('Please fill in all fields.');
+      Alert.alert('Please fill in all fields.');
     }
   };
 
