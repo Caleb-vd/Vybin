@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { signInWithPhoneNumber } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../firebaseConfig';
 
 type AuthStackParamList = {
   PhoneLogin: undefined;

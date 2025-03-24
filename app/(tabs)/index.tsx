@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../contexts/AuthContext';
-import LoginScreen from '../../screens/PhoneLoginScreen';
-import ProfileScreen from '../../ProfileScreen';
+import AuthStack from '../../navigation/AuthStack';
+import AppStack from '../../navigation/AppStack'; // your "logged-in" stack
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -15,5 +15,5 @@ export default function Home() {
     );
   }
 
-  return user ? <ProfileScreen /> : <LoginScreen />;
+  return user ? <AppStack /> : <AuthStack />;
 }
