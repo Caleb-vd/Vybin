@@ -1,2 +1,2 @@
-import ChatScreen from '../../ChatScreen';
+import ChatScreen from '../../screens/ChatScreen';
 export default ChatScreen;

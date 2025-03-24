@@ -1,10 +1,8 @@
-// navigation/AppStack.tsx
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProfileScreen from '../screens/ProfileScreen';
 import ProfileSetupScreen from '../screens/ProfileSetupScreen';
 import MatchmakingScreen from '../screens/MatchmakingScreen';
-import ChatScreen from '../screens/ChatScreen'; // Import ChatScreen
-
+import ChatScreen from '../screens/ChatScreen';
 
 // Define the param list for your stack navigation
 export type AppStackParamList = {
