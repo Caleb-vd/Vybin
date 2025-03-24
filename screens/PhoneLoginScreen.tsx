@@ -1,29 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, TextInput, Button, Alert } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { signInWithPhoneNumber } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
+import { AuthContext } from '../contexts/AuthContext'; // make sure path is correct
 
-type AuthStackParamList = {
-  PhoneLogin: undefined;
-  OTPScreen: { confirmation: any };
-};
+const PhoneLoginScreen: React.FC = ({ }) => {
+  const [phone, setPhone] = useState('');
+  const { setUser } = useContext(AuthContext); // 👈 grab setUser from context
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'PhoneLogin'>;
-
-const PhoneLoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [phone, setPhone] = useState<string>('');
-
-  const handleSendCode = async () => {
-    if (!phone) return Alert.alert('Enter phone number');
-
-    try {
-      const confirmation = await signInWithPhoneNumber(auth, phone);
-      navigation.navigate('OTPScreen', { confirmation });
-    } catch (error: any) {
-      console.error(error);
-      Alert.alert('Error sending code', error.message);
-    }
+  const handleSkipOTP = () => {
+    // Set a dummy user object to simulate login
+    setUser({
+      uid: 'test-user-id',
+      phoneNumber: phone || '+0000000000',
+    } as any); // 👈 we're casting as any to mock Firebase's User type
   };
 
   return (
@@ -35,7 +23,8 @@ const PhoneLoginScreen: React.FC<Props> = ({ navigation }) => {
         onChangeText={setPhone}
         style={{ borderWidth: 1, padding: 10, marginBottom: 20 }}
       />
-      <Button title="Send Code" onPress={handleSendCode} />
+      <Button title="Send Code (not working)" onPress={() => Alert.alert('Firebase disabled')} />
+      <Button title="Skip OTP (Dev Mode)" onPress={handleSkipOTP} />
     </View>
   );
 };
